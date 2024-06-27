@@ -1,3 +1,25 @@
+:root {
+    --color-primary: #09005e;
+    --color-background: #ffffff;
+    --color-text: #222222;
+    --color-correct: #2e7d32;
+    --color-incorrect: #c62828;
+
+    --size-border-radius: 4px;
+    --size-spacing-small: 10px;
+    --size-spacing-medium: 20px;
+    --size-spacing-large: 30px;
+
+    --font-size-small: 14px;
+    --font-size-medium: 16px;
+    --font-size-large: 18px;
+
+    --layout-max-width: 600px;
+    --layout-content-width: 90%;
+
+    --animation-duration: 0.01s;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -6,61 +28,88 @@
 }
 
 body {
-    background: #09005e;
+    background: var(--color-primary);
+    color: var(--color-text);
+    line-height: 1.6;
 }
 
 .app {
-    background: #fff;
-    width: 90%;
-    max-width: 600px;
-    margin: 100px auto 0;
-    border-radius: 10px;
-    padding: 30px;
+    background: var(--color-background);
+    width: var(--layout-content-width);
+    max-width: var(--layout-max-width);
+    margin: var(--size-spacing-large) auto 0;
+    border-radius: calc(var(--size-border-radius) * 2.5);
+    padding: var(--size-spacing-large);
+    box-shadow: 0 0 var(--size-spacing-small) rgba(0, 0, 0, 0.1);
 }
 
 .app h1 {
-    padding-bottom: 30px;
+    padding-bottom: var(--size-spacing-large);
+    text-align: center;
 }
 
 .quiz {
-    padding: 20px 0;
+    padding: var(--size-spacing-medium) 0;
 }
 
 .quiz h2 {
-    font-size: 18px;
+    font-size: var(--font-size-large);
     font-weight: 600;
+    margin-bottom: var(--size-spacing-medium);
 }
 
 .button {
-    background: #fff;
-    color: #222;
+    background: var(--color-background);
+    color: var(--color-text);
     font-weight: 500;
     width: 100%;
-    border: 1px solid #222;
-    padding: 10px;
-    margin: 10px 0;
+    border: 1px solid var(--color-text);
+    padding: var(--size-spacing-small);
+    margin: var(--size-spacing-small) 0;
     text-align: left;
-    border-radius: 4px;
+    border-radius: var(--size-border-radius);
     cursor: pointer;
+    transition: background-color var(--animation-duration), color var(--animation-duration);
+}
+
+.button:hover, .button:focus {
+    background-color: #f0f0f0;
+    outline: none;
 }
 
 #nextButton {
-    background: #09005e;
-    color: #fff;
+    background: var(--color-primary);
+    color: var(--color-background);
     font-weight: 500;
     width: 150px;
     border: 0;
-    padding: 10px;
-    margin: 20px auto 0;
-    border-radius: 4px;
+    padding: var(--size-spacing-small);
+    margin: var(--size-spacing-medium) auto 0;
+    border-radius: var(--size-border-radius);
     cursor: pointer;
     display: none;
+    transition: opacity var(--animation-duration);
+}
+
+#nextButton:hover, #nextButton:focus {
+    opacity: 0.9;
+    outline: none;
 }
 
 .correct {
-    background: #7a7600;
+    background: var(--color-correct);
+    color: var(--color-background);
 }
 
 .incorrect {
-    background: #fd0000;
+    background: var(--color-incorrect);
+    color: var(--color-background);
+}
+
+@media (max-width: 600px) {
+    .app {
+        width: 100%;
+        margin: 0;
+        border-radius: 0;
+    }
 }
