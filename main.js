@@ -4,6 +4,8 @@ import {questions} from './questions.js'
 let currentQuestionIndex = 0
 let score = 0
 let timer = 0
+let selectedAnswersCount = 0
+let maxCorrectAnswers = 0
 
 function startQuiz() {
     currentQuestionIndex = 0
@@ -13,23 +15,26 @@ function startQuiz() {
 }
 
 function showQuestion() {
-    resetState()
-    let currentQuestion = questions[currentQuestionIndex]
-    let questionNo = currentQuestionIndex + 1
-    questionElement.innerHTML = questionNo + ". " + currentQuestion.question
+    resetState();
+    let currentQuestion = questions[currentQuestionIndex];
+    let questionNo = currentQuestionIndex + 1;
+    questionElement.innerHTML = questionNo + ". " + currentQuestion.question;
+
+    selectedAnswersCount = 0;
+    maxCorrectAnswers = currentQuestion.answer.filter(answer => answer.correct).length;
 
     currentQuestion.answer.forEach(answer => {
-        const button = document.createElement("button")
-        button.innerHTML = answer.text
-        button.classList.add("button")
-        answerButtons.appendChild(button)
+        const button = document.createElement("button");
+        button.innerHTML = answer.text;
+        button.classList.add("button");
+        answerButtons.appendChild(button);
         if (answer.correct) {
-            button.dataset.correct = answer.correct
+            button.dataset.correct = answer.correct;
         }
-        button.addEventListener("click", selectAnswer)
-    })
+        button.addEventListener("click", selectAnswer);
+    });
 
-    startTimer()
+    startTimer();
 }
 
 function resetState() {
@@ -41,22 +46,30 @@ function resetState() {
 }
 
 function selectAnswer(e) {
-    clearInterval(timer)
-    const selectedButton = e.target
-    const isCorrect = selectedButton.dataset.correct === "true"
-    if (isCorrect) {
-        selectedButton.classList.add("correct")
-        score++
-    } else {
-        selectedButton.classList.add("incorrect")
-    }
-    Array.from(answerButtons.children).forEach(button => {
-        if (button.dataset.correct === "true") {
-            button.classList.add("correct")
+    const selectedButton = e.target;
+    const isCorrect = selectedButton.dataset.correct === "true";
+
+    if (selectedAnswersCount < maxCorrectAnswers) {
+        if (isCorrect) {
+            selectedButton.classList.add("correct");
+            score++;
+        } else {
+            selectedButton.classList.add("incorrect");
         }
-        button.disabled = true
-    });
-    nextButton.style.display = "block"
+        selectedButton.disabled = true;
+        selectedAnswersCount++;
+
+        if (selectedAnswersCount === maxCorrectAnswers) {
+            clearInterval(timer);
+            Array.from(answerButtons.children).forEach(button => {
+                if (button.dataset.correct === "true" && !button.classList.contains("correct")) {
+                    button.classList.add("correct");
+                }
+                button.disabled = true;
+            });
+            nextButton.style.display = "block";
+        }
+    }
 }
 
 function showScore() {
