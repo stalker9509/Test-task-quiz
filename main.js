@@ -1,73 +1,13 @@
-const questions = [
-    {
-        question: "How many planets are in the solar system?",
-        answer: [
-            {text: "8", correct: true},
-            {text: "9", correct: false},
-            {text: "10", correct: false},
-        ]
-    },
-    {
-        question: "What is the freezing point of water?",
-        answer: [
-            {text: "0", correct: true},
-            {text: "-5", correct: false},
-            {text: "-6", correct: false},
-        ]
-    },
-    {
-        question: "What is the longest river in the world?",
-        answer: [
-            {text: "Nile", correct: true},
-            {text: "Amazon", correct: false},
-            {text: "Yangtze", correct: false},
-        ]
-    },
-    {
-        question: "How many chromosomes are in the human genome?",
-        answer: [
-            {text: "42", correct: false},
-            {text: "44", correct: false},
-            {text: "46", correct: true},
-        ]
-    },
-    {
-        question: "Which of these characters are friends with Harry Potter?",
-        answer: [
-            {text: "Ron Weasley", correct: true},
-            {text: "Draco Malfoy", correct: false},
-            {text: "Hermione Granger", correct: true},
-        ]
-    },
-    {
-        question: "What is the capital of Canada?",
-        answer: [
-            {text: "Toronto", correct: false},
-            {text: "Ottawa", correct: true},
-            {text: "Vancouver", correct: false},
-        ]
-    },
-    {
-        question: "What is the Jewish New Year called? ",
-        answer: [
-            {text: "Hanukkah", correct: true},
-            {text: "Yom Kippur", correct: false},
-            {text: "Kwanzaa", correct: false},
-        ]
-    },
-]
+import {questionElement, answerButtons, nextButton, timerElement, timePerQuestion} from './const.js'
+import {questions} from './questions.js'
 
-const questionElement = document.getElementById("question")
-const answerButtons = document.getElementById("answerButtons")
-const nextButton = document.getElementById("nextButton")
-
-let currentQuestionIndex
-let score
-let selectedAnswersCount
+let currentQuestionIndex = 0
+let score = 0
+let timer = 0
 
 function startQuiz() {
-    currentQuestionIndex = 0;
-    score = 0;
+    currentQuestionIndex = 0
+    score = 0
     nextButton.innerHTML = "Next"
     showQuestion()
 }
@@ -75,100 +15,56 @@ function startQuiz() {
 function showQuestion() {
     resetState()
     let currentQuestion = questions[currentQuestionIndex]
-    let questionNo = currentQuestionIndex + 1;
+    let questionNo = currentQuestionIndex + 1
     questionElement.innerHTML = questionNo + ". " + currentQuestion.question
 
-    const correctAnswersCount = currentQuestion.answer.filter(answer => answer.correct).length
-    selectedAnswersCount = 0
-
     currentQuestion.answer.forEach(answer => {
-        const btn = document.createElement("button")
-        btn.innerHTML = answer.text
-        btn.classList.add("button")
-        answerButtons.appendChild(btn)
+        const button = document.createElement("button")
+        button.innerHTML = answer.text
+        button.classList.add("button")
+        answerButtons.appendChild(button)
         if (answer.correct) {
-            btn.dataset.correct = answer.correct
+            button.dataset.correct = answer.correct
         }
-        btn.addEventListener("click", (e) => selectAnswer(e, correctAnswersCount))
+        button.addEventListener("click", selectAnswer)
     })
+
+    startTimer()
 }
 
 function resetState() {
+    clearInterval(timer)
     nextButton.style.display = "none"
     while (answerButtons.firstChild) {
         answerButtons.removeChild(answerButtons.firstChild)
     }
 }
 
-function selectAnswer(e, correctAnswersCount) {
+function selectAnswer(e) {
+    clearInterval(timer)
     const selectedButton = e.target
     const isCorrect = selectedButton.dataset.correct === "true"
-
-    if (correctAnswersCount === 1) {
-        handleSingleAnswer(selectedButton, isCorrect)
-    } else {
-        handleMultipleAnswer(selectedButton, isCorrect, correctAnswersCount)
-    }
-}
-
-function handleSingleAnswer(selectedButton, isCorrect) {
     if (isCorrect) {
         selectedButton.classList.add("correct")
         score++
     } else {
         selectedButton.classList.add("incorrect")
     }
-
     Array.from(answerButtons.children).forEach(button => {
         if (button.dataset.correct === "true") {
             button.classList.add("correct")
         }
         button.disabled = true
-    })
-
+    });
     nextButton.style.display = "block"
-}
-
-function handleMultipleAnswer(selectedButton, isCorrect, correctAnswersCount) {
-    if (!selectedButton.disabled) {
-        if (isCorrect) {
-            selectedButton.classList.add("correct")
-        } else {
-            selectedButton.classList.add("incorrect")
-        }
-        selectedButton.disabled = true
-        selectedAnswersCount++
-
-        if (selectedAnswersCount === correctAnswersCount) {
-            Array.from(answerButtons.children).forEach(button => {
-                button.disabled = true
-                if (button.dataset.correct === "true" && !button.classList.contains("correct")) {
-                    button.classList.add("correct")
-                }
-            })
-            calculateScore()
-            nextButton.style.display = "block"
-        }
-    }
-}
-
-function calculateScore() {
-    const currentQuestion = questions[currentQuestionIndex]
-    const selectedCorrect = Array.from(answerButtons.children)
-        .filter(button => button.classList.contains("correct") && button.disabled)
-        .length
-    const totalCorrect = currentQuestion.answer.filter(answer => answer.correct).length
-
-    if (selectedCorrect === totalCorrect) {
-        score++
-    }
 }
 
 function showScore() {
-    resetState()
-    questionElement.innerHTML = `Score ${score}/${questions.length}`;
-    nextButton.innerHTML = "Play again"
+    resetState();
+    questionElement.innerHTML = `You scored ${score}/${questions.length}`
+    nextButton.innerHTML = "Play Again"
     nextButton.style.display = "block"
+    timerElement.style.display = "none"
 }
 
 function handleNextButton() {
@@ -186,6 +82,45 @@ nextButton.addEventListener("click", () => {
     } else {
         startQuiz()
     }
-})
+});
 
-startQuiz()
+function startTimer() {
+    let timeLeft = timePerQuestion
+    timerElement.style.display = "block"
+    timerElement.innerHTML = timeLeft
+
+    timer = setInterval(() => {
+        timeLeft--
+        timerElement.innerHTML = timeLeft
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            selectAnswer({target: document.createElement('button')}); // Выбираем "неправильный" ответ
+        }
+    }, 1000)
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme')
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark'
+    document.documentElement.setAttribute('data-theme', newTheme)
+    localStorage.setItem('theme', newTheme)
+}
+
+function setInitialTheme() {
+    const savedTheme = localStorage.getItem('theme')
+    if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme)
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.setAttribute('data-theme', 'dark')
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    setInitialTheme()
+    startQuiz()
+
+    const themeToggle = document.getElementById('themeToggle')
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme)
+    }
+});

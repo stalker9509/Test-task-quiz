@@ -1,23 +1,34 @@
 :root {
-    --color-primary: #09005e;
-    --color-background: #ffffff;
-    --color-text: #222222;
-    --color-correct: #2e7d32;
-    --color-incorrect: #c62828;
-
     --size-border-radius: 4px;
     --size-spacing-small: 10px;
     --size-spacing-medium: 20px;
     --size-spacing-large: 30px;
-
     --font-size-small: 14px;
     --font-size-medium: 16px;
     --font-size-large: 18px;
-
     --layout-max-width: 600px;
     --layout-content-width: 90%;
-
     --animation-duration: 0.01s;
+
+    --color-primary: #09005e;
+    --color-primary-themeToggle: #121212;
+    --color-background: #ffffff;
+    --color-text: #222222;
+    --color-correct: #7a7600;
+    --color-incorrect: #fd0000;
+    --color-button-hover: #f0f0f0;
+    --color-body-background: #09005e;
+}
+
+[data-theme="dark"] {
+    --color-primary: #ffffff;
+    --color-primary-themeToggle: #ffffff;
+    --color-background: #121212;
+    --color-text: #e0e0e0;
+    --color-correct: #4caf50;
+    --color-incorrect: #f44336;
+    --color-button-hover: #2c2c2c;
+    --color-body-background: #121212;
 }
 
 * {
@@ -28,34 +39,34 @@
 }
 
 body {
-    background: var(--color-primary);
+    background: var(--color-body-background);
     color: var(--color-text);
     line-height: 1.6;
+    transition: background-color var(--animation-duration), color var(--animation-duration);
 }
 
 .app {
     background: var(--color-background);
     width: var(--layout-content-width);
     max-width: var(--layout-max-width);
-    margin: var(--size-spacing-large) auto 0;
-    border-radius: calc(var(--size-border-radius) * 2.5);
+    margin: 100px auto 80px;
+    border-radius: 10px;
     padding: var(--size-spacing-large);
-    box-shadow: 0 0 var(--size-spacing-small) rgba(0, 0, 0, 0.1);
+    transition: background-color var(--animation-duration);
+    position: relative;
 }
 
 .app h1 {
-    padding-bottom: var(--size-spacing-large);
-    text-align: center;
+    padding-bottom: 30px;
 }
 
 .quiz {
-    padding: var(--size-spacing-medium) 0;
+    padding: 20px 0;
 }
 
 .quiz h2 {
-    font-size: var(--font-size-large);
+    font-size: 18px;
     font-weight: 600;
-    margin-bottom: var(--size-spacing-medium);
 }
 
 .button {
@@ -64,8 +75,8 @@ body {
     font-weight: 500;
     width: 100%;
     border: 1px solid var(--color-text);
-    padding: var(--size-spacing-small);
-    margin: var(--size-spacing-small) 0;
+    padding: 10px;
+    margin: 10px 0;
     text-align: left;
     border-radius: var(--size-border-radius);
     cursor: pointer;
@@ -73,7 +84,7 @@ body {
 }
 
 .button:hover, .button:focus {
-    background-color: #f0f0f0;
+    background-color: var(--color-button-hover);
     outline: none;
 }
 
@@ -83,12 +94,12 @@ body {
     font-weight: 500;
     width: 150px;
     border: 0;
-    padding: var(--size-spacing-small);
-    margin: var(--size-spacing-medium) auto 0;
+    padding: 10px;
+    margin: 20px auto 0;
     border-radius: var(--size-border-radius);
     cursor: pointer;
     display: none;
-    transition: opacity var(--animation-duration);
+    transition: background-color var(--animation-duration), opacity var(--animation-duration);
 }
 
 #nextButton:hover, #nextButton:focus {
@@ -106,10 +117,41 @@ body {
     color: var(--color-background);
 }
 
+#timer {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: var(--color-primary);
+    color: var(--color-background);
+    padding: 5px 10px;
+    border-radius: var(--size-border-radius);
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#themeToggle {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-primary-themeToggle);
+    color: var(--color-background);
+    border: none;
+    padding: var(--size-spacing-small) var(--size-spacing-medium);
+    border-radius: var(--size-border-radius);
+    cursor: pointer;
+    transition: background-color var(--animation-duration), color var(--animation-duration);
+    z-index: 1000;
+}
+
 @media (max-width: 600px) {
     .app {
         width: 100%;
-        margin: 0;
+        margin: 0 0 80px 0;
         border-radius: 0;
+    }
+
+    #themeToggle {
+        bottom: 10px;
     }
 }
