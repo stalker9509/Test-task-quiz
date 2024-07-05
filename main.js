@@ -6,6 +6,7 @@ let score = 0
 let timer = 0
 let selectedAnswersCount = 0
 let maxCorrectAnswers = 0
+let allCorrectAnswersSelected = false
 
 function startQuiz() {
     currentQuestionIndex = 0
@@ -15,26 +16,27 @@ function startQuiz() {
 }
 
 function showQuestion() {
-    resetState();
-    let currentQuestion = questions[currentQuestionIndex];
-    let questionNo = currentQuestionIndex + 1;
-    questionElement.innerHTML = questionNo + ". " + currentQuestion.question;
+    resetState()
+    let currentQuestion = questions[currentQuestionIndex]
+    let questionNo = currentQuestionIndex + 1
+    questionElement.innerHTML = questionNo + ". " + currentQuestion.question
 
-    selectedAnswersCount = 0;
-    maxCorrectAnswers = currentQuestion.answer.filter(answer => answer.correct).length;
+    selectedAnswersCount = 0
+    maxCorrectAnswers = currentQuestion.answer.filter(answer => answer.correct).length
+    allCorrectAnswersSelected = true
 
     currentQuestion.answer.forEach(answer => {
-        const button = document.createElement("button");
-        button.innerHTML = answer.text;
-        button.classList.add("button");
-        answerButtons.appendChild(button);
+        const button = document.createElement("button")
+        button.innerHTML = answer.text
+        button.classList.add("button")
+        answerButtons.appendChild(button)
         if (answer.correct) {
-            button.dataset.correct = answer.correct;
+            button.dataset.correct = answer.correct
         }
-        button.addEventListener("click", selectAnswer);
-    });
+        button.addEventListener("click", selectAnswer)
+    })
 
-    startTimer();
+    startTimer()
 }
 
 function resetState() {
@@ -46,28 +48,31 @@ function resetState() {
 }
 
 function selectAnswer(e) {
-    const selectedButton = e.target;
-    const isCorrect = selectedButton.dataset.correct === "true";
+    const selectedButton = e.target
+    const isCorrect = selectedButton.dataset.correct === "true"
 
     if (selectedAnswersCount < maxCorrectAnswers) {
         if (isCorrect) {
-            selectedButton.classList.add("correct");
-            score++;
+            selectedButton.classList.add("correct")
         } else {
-            selectedButton.classList.add("incorrect");
+            selectedButton.classList.add("incorrect")
+            allCorrectAnswersSelected = false
         }
-        selectedButton.disabled = true;
-        selectedAnswersCount++;
+        selectedButton.disabled = true
+        selectedAnswersCount++
 
         if (selectedAnswersCount === maxCorrectAnswers) {
-            clearInterval(timer);
+            clearInterval(timer)
+            if (allCorrectAnswersSelected) {
+                score++;
+            }
             Array.from(answerButtons.children).forEach(button => {
                 if (button.dataset.correct === "true" && !button.classList.contains("correct")) {
-                    button.classList.add("correct");
+                    button.classList.add("correct")
                 }
-                button.disabled = true;
+                button.disabled = true
             });
-            nextButton.style.display = "block";
+            nextButton.style.display = "block"
         }
     }
 }
